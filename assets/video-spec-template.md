@@ -1,5 +1,6 @@
-# 体系 B · 视频分镜规格书模板
+# 主体系 · 视频分镜规格书模板
 
+> 由唯一基准 https://app.tapnow.media/canvas/0e561120-5c2d-4bd8-821b-f5c532645ec5 的 30 秒 5 镜提示词反推；原型原文见 `references/golden-example.md`。
 > 五段固定顺序：风格锁 → 参考图锚定 → 空间与站位声明 → CLIP 正文 → BGM 与声音设计。
 > 规范见 `references/spec-guide.md`；质量基线见 `references/golden-example.md`；风格词查 `references/style-lock-library.md`。
 > 复制下方分隔线以内的正文填写。首段 `[STYLE LOCK]` 标签可保留（画布视频节点写法），也可按黄金范例去掉，两种格式均有效。
