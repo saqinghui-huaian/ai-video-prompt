@@ -1,8 +1,8 @@
-# 体系 A · 图片提示词规范
+# 辅助模式 · 图片提示词规范（非主线）
 
-> 独立体系：影视飓风《图片提示词》四维框架。面向**单张静态图**。
+> 影视飓风《图片提示词》四维框架，面向**单张静态图**。仅在用户明确要求设定图 / 定妆照 / 单张图时启用。
 > 原图溯源 `references/visual-dimension-map.jpg`；完整维度选项见 `references/dimension-library.md`；可填模板见 `assets/image-prompt-template.md`。
-> 与体系 B（视频规格书）**并列**，不互为附属。
+> **不是与主体系并列的第二套体系，也不得替代五段规格书。** 主体系见 `references/spec-guide.md`。
 
 ## 一、适用与不适用
 
@@ -11,7 +11,7 @@
 | 角色设定图 / character sheet、场景空镜、道具三视图、单张主视觉、封面图 | 分镜脚本、30 秒成片、含对白的剧情、需跨镜保持动线与声画一致的内容 |
 | 即梦 / Seedream / 可灵图片 / Midjourney / FLUX / SD | Seedance / Veo / Kling 的视频生成任务 |
 
-出现「分镜 / 5 镜 / 30 秒 / 对白 / 声音设计 / STYLE LOCK / 参考图锚定」任一信号 → 切到体系 B。
+出现「分镜 / 5 镜 / 30 秒 / 对白 / 声音设计 / STYLE LOCK / 参考图锚定」任一信号 → 切到主体系。
 
 ## 二、四维框架（查漏用，不是书写顺序）
 
@@ -53,7 +53,7 @@
 
 > Documentary-grade photorealistic portrait, art-house colour grading, cold blue-grey low saturation, Fuji 400H film grain. China, autumn 2012, afternoon. Studio with pale grey floor and deep grey-blue gradient backdrop. LI MO, an 18-year-old Chinese high school senior, tall and lean, short black hair, black-framed glasses, white school shirt buttoned at the cuffs, restrained expression, no smile; standing at ease, arms down, slightly tense shoulders. Full-body frontal eye-level shot, centred composition, 35mm lens, headroom preserved, shoes fully visible. Two frontal softboxes plus a weak rim light from behind, soft light quality, thin highlight on the lenses, even shadowless backdrop. Quiet, guarded. ARRI ALEXA 35 look, shallow depth of field, realistic skin texture, high resolution. No deformation, extra fingers, distorted face, text, watermark, logo.
 
-**可调参数**：把「冷蓝灰」换「暖金 Fuji 400H」即切到体系 B 里的 2000s 生日宴色温；把「正面平光」换「落地窗逆光」即得到室外版本。
+**可调参数**：把「冷蓝灰」换「暖金 Fuji 400H」即切到主体系 里的 2000s 生日宴色温；把「正面平光」换「落地窗逆光」即得到室外版本。
 
 **跨年龄一致性**：生成 32 岁版本时追加 `Same person as the attached 18-year-old character sheet`，并把本图作为参考图传入；详见 `references/style-lock-library.md` 第六节。
 
@@ -67,4 +67,4 @@
 6. 摄影机 / 胶片型号 / 画质参数至少给一项。
 7. 负面约束已附；中英双版内容一致。
 8. 附一行可调参数。
-9. 若用户后续要「做成视频 / 分镜」，提示切换到体系 B，不继续堆图。
+9. 若用户后续要「做成视频 / 分镜」，提示切换到主体系，不继续堆图。
