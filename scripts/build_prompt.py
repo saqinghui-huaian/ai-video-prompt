@@ -22,8 +22,10 @@ REQUIRED_STYLE_KEYS = (
     "set_dressing", "crowd", "grade", "dialogue_rule",
 )
 REQUIRED_TOP_KEYS = (
-    "style_lock", "reference_images", "spatial", "clips", "sound",
+    "style_lock", "spatial", "clips", "sound",
 )
+# reference_images is optional: omitting the key and passing [] both mean
+# "no reference images", which is a legal degraded configuration.
 
 # Soft-check thresholds per style of film. Keys are tokens looked up in clip bodies.
 # Not every shot carries every marker: a product film has no off-screen dialogue,
@@ -112,20 +114,21 @@ def validate(cfg: dict) -> list[str]:
             problems.append(f"style_lock.{key} is empty")
 
     # Zero reference images is a legal configuration (degraded mode), not an error.
+    # 'note' is an extra remark and never a substitute for the two mandatory boundaries.
     for i, ref in enumerate(cfg.get("reference_images") or [], 1):
         if not ref.get("name"):
             problems.append(f"reference_images[{i}].name is empty")
         if not ref.get("provides"):
             problems.append(f"reference_images[{i}].provides is empty")
-        if not (ref.get("withholds") or ref.get("note")):
+        if not ref.get("withholds"):
             problems.append(
-                f"reference_images[{i}] has no boundary field: "
-                "add 'withholds' (what it must NOT control) or 'note'"
+                f"reference_images[{i}].withholds is empty: write what this image must NOT "
+                "control (camera, framing, expression, light direction...)"
             )
-        if not ref.get("conflict") and not ref.get("note"):
+        if not ref.get("conflict"):
             problems.append(
-                f"reference_images[{i}] has no conflict rule: "
-                "add 'conflict' e.g. '冲突以正文为准'"
+                f"reference_images[{i}].conflict is empty: write the tie-breaker, "
+                "e.g. '冲突以正文为准'"
             )
         if ref.get("slot") and ref["slot"] != f"Image {i}":
             problems.append(
@@ -139,11 +142,22 @@ def validate(cfg: dict) -> list[str]:
             problems.append(f"spatial.{key} is empty")
 
     clips = cfg["clips"]
+    if not clips:
+        problems.append("clips is empty")
+        return problems
     expected = cfg.get("clip_count", len(clips))
     if len(clips) != expected:
         problems.append(f"clip count {len(clips)} != clip_count {expected}")
+
+    profile_name = cfg.get("check_profile", "dialogue")
+    if profile_name not in CHECK_PROFILES:
+        problems.append(
+            f"unknown check_profile {profile_name!r}; use one of {sorted(CHECK_PROFILES)}"
+        )
+
     total = 0.0
     prev_end = None
+    tc_ok = True
     for i, clip in enumerate(clips, 1):
         if not clip.get("body"):
             problems.append(f"clips[{i}].body is empty")
@@ -156,11 +170,14 @@ def validate(cfg: dict) -> list[str]:
                 problems.append(f"clips[{i}] time code is not continuous with previous clip")
             prev_end = start + dur
         except (ValueError, KeyError, TypeError) as exc:
+            tc_ok = False
             problems.append(f"clips[{i}]: {exc}")
 
-    duration = cfg.get("duration", total)
-    if abs(total - duration) > 0.01:
-        problems.append(f"time codes sum to {total}s, expected {duration}s")
+    # Only check the total when every time code parsed; otherwise the sum is noise.
+    if tc_ok:
+        duration = cfg.get("duration", total)
+        if abs(total - duration) > 0.01:
+            problems.append(f"time codes sum to {total}s, expected {duration}s")
 
     sound = cfg["sound"]
     if not sound.get("bed"):
@@ -175,34 +192,52 @@ def validate(cfg: dict) -> list[str]:
     return problems
 
 
-def warnings(cfg: dict) -> list[str]:
-    """Soft checks at whole-clip level. Thresholds come from check_profile."""
-    out: list[str] = []
+CJK = re.compile(r"[\u4e00-\u9fff]")
+
+
+def soft_checks(cfg: dict) -> tuple[list[str], list[str]]:
+    """Whole-clip soft checks. Returns (warnings, infos)."""
+    warns: list[str] = []
+    infos: list[str] = []
     clips = cfg.get("clips", [])
     n = len(clips)
     if not n:
-        return out
+        return warns, infos
 
-    profile_name = cfg.get("check_profile", "dialogue")
-    profile = CHECK_PROFILES.get(profile_name)
-    if profile is None:
-        out.append(
-            f"unknown check_profile {profile_name!r}; "
-            f"use one of {sorted(CHECK_PROFILES)}"
+    refs = cfg.get("reference_images") or []
+    if len(refs) > 4:
+        warns.append(
+            f"{len(refs)} reference images attached; attention per image drops fast above 4 — "
+            "consider merging into a single art board or splitting the film"
         )
-        return out
 
-    def count(token: str) -> int:
-        return sum(1 for c in clips if token in c.get("body", ""))
+    if not (cfg.get("subject") or cfg.get("spatial", {}).get("subject")):
+        warns.append(
+            "no subject name (top-level 'subject' or spatial.subject); the blocking line "
+            "will read '主体动线' — set it so the sentence names the character"
+        )
 
-    for token, minimum in profile.items():
-        got = count(token)
-        if got < minimum:
-            out.append(f"only {got}/{n} clips carry '{token}'; target >= {minimum}")
+    profile = CHECK_PROFILES.get(cfg.get("check_profile", "dialogue"))
+    if profile is None:
+        return warns, infos  # already reported as an error by validate()
+
+    # Keyword checks are Chinese-only. On an English prompt they would all fire
+    # falsely, so skip them and say so instead of pretending the prompt failed.
+    bodies = [c.get("body", "") for c in clips]
+    if not any(CJK.search(b) for b in bodies):
+        infos.append(
+            "prompt body is not Chinese; skipped the Chinese keyword checks "
+            "(前景/背景/手持/画外). Verify depth cues and camera handling by reading the clips."
+        )
+    else:
+        for token, minimum in profile.items():
+            got = sum(1 for b in bodies if token in b)
+            if got < minimum:
+                warns.append(f"only {got}/{n} clips carry '{token}'; target >= {minimum}")
 
     if not cfg.get("negative"):
-        out.append("no negative constraints declared")
-    return out
+        warns.append("no negative constraints declared")
+    return warns, infos
 
 
 def _sentences(value) -> str:
@@ -277,14 +312,16 @@ def main() -> int:
         return 0
 
     problems = validate(cfg)
-    soft = warnings(cfg)
+    warns, infos = soft_checks(cfg)
     refs = norm_refs(cfg)
     print(f"[check] {args.config.name}: {'PASS' if not problems else 'FAIL'} "
           f"({len(cfg.get('clips', []))} clips, {cfg.get('duration', '?')}s, {len(refs)} refs)")
     for p in problems:
         print(f"  ERROR  {p}")
-    for w in soft:
+    for w in warns:
         print(f"  WARN   {w}")
+    for i in infos:
+        print(f"  INFO   {i}")
     print("--- MANIFEST ---")
     print(manifest(cfg))
 
