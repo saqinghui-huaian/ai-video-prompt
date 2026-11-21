@@ -53,7 +53,7 @@
 
 > Documentary-grade photorealistic portrait, art-house colour grading, cold blue-grey low saturation, Fuji 400H film grain. China, autumn 2012, afternoon. Studio with pale grey floor and deep grey-blue gradient backdrop. LI MO, an 18-year-old Chinese high school senior, tall and lean, short black hair, black-framed glasses, white school shirt buttoned at the cuffs, restrained expression, no smile; standing at ease, arms down, slightly tense shoulders. Full-body frontal eye-level shot, centred composition, 35mm lens, headroom preserved, shoes fully visible. Two frontal softboxes plus a weak rim light from behind, soft light quality, thin highlight on the lenses, even shadowless backdrop. Quiet, guarded. ARRI ALEXA 35 look, shallow depth of field, realistic skin texture, high resolution. No deformation, extra fingers, distorted face, text, watermark, logo.
 
-**可调参数**：把「冷蓝灰」换「暖金 Fuji 400H」即切到主体系 里的 2000s 生日宴色温；把「正面平光」换「落地窗逆光」即得到室外版本。
+**可调参数**：把「冷蓝灰」换「暖金 Fuji 400H」即切到主体系里的暖金色温方向（见风格锁词库第一组）；把「正面平光」换「落地窗逆光」即得到室外版本。
 
 **跨年龄一致性**：生成 32 岁版本时追加 `Same person as the attached 18-year-old character sheet`，并把本图作为参考图传入；详见 `references/style-lock-library.md` 第六节。
 
