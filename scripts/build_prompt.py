@@ -2,9 +2,11 @@
 """Assemble a five-part AI video prompt spec from a JSON config.
 
 Usage:
-    python build_prompt.py <config.json> [-o output.md] [--check]
+    python build_prompt.py <config.json> [-o output.md] [--check] [--manifest]
 
 With --check, validate structure only and print a report.
+With --manifest, print only the reference-image reconciliation table.
+
 No third-party dependencies; Python 3.9+.
 """
 from __future__ import annotations
@@ -22,6 +24,16 @@ REQUIRED_STYLE_KEYS = (
 REQUIRED_TOP_KEYS = (
     "style_lock", "reference_images", "spatial", "clips", "sound",
 )
+
+# Soft-check thresholds per style of film. Keys are tokens looked up in clip bodies.
+# Not every shot carries every marker: a product film has no off-screen dialogue,
+# an empty-scene montage may have no camera handling at all.
+CHECK_PROFILES = {
+    "dialogue": {"前景": 3, "背景": 3, "手持": 2, "画外": 2},
+    "no_dialogue": {"前景": 3, "背景": 3, "手持": 2},
+    "product": {"前景": 2, "背景": 2},
+    "montage": {"前景": 2, "背景": 2},
+}
 
 
 def load_config(path: Path) -> dict:
@@ -41,6 +53,50 @@ def parse_tc(span: str) -> float:
     return end - start
 
 
+def norm_refs(cfg: dict) -> list[dict]:
+    """Normalise reference images.
+
+    Slot is always derived from position: the Nth attached image is Image N.
+    Accepts both the short form (name / provides / note) and the full form
+    (name / provides / withholds / conflict).
+    """
+    refs = cfg.get("reference_images") or []
+    out: list[dict] = []
+    for i, ref in enumerate(refs, 1):
+        item = dict(ref)
+        item["slot"] = f"Image {i}"
+        item["withholds"] = ref.get("withholds") or ""
+        item["conflict"] = ref.get("conflict") or ""
+        item["note"] = ref.get("note") or ""
+        out.append(item)
+    return out
+
+
+def ref_line(ref: dict) -> str:
+    """Render one reference row. Structure: what it is; what it locks; what it must not."""
+    parts = [ref["provides"]] if ref.get("provides") else []
+    if ref.get("withholds"):
+        parts.append(ref["withholds"])
+    if ref.get("note"):
+        parts.append(ref["note"])
+    if ref.get("conflict"):
+        parts.append(ref["conflict"])
+    body = "；".join(p.strip("；。 ") for p in parts if p.strip("；。 ")) or "提供参考"
+    return f"{{{{{ref['slot']}}}}} = {ref['name']}：{body}。"
+
+
+def manifest(cfg: dict) -> str:
+    """Reconciliation table: placeholder -> attachment order -> what it locks."""
+    refs = norm_refs(cfg)
+    if not refs:
+        return "参考图挂载顺序：本片不使用参考图（提示词内无 {{Image N}} 占位，需以文字描述主体与场景）。"
+    lines = ["参考图挂载顺序（必须与生成节点内图片排列顺序一致，错位则编号全错）："]
+    for ref in refs:
+        lock = ref.get("provides") or "提供参考"
+        lines.append(f"  {ref['slot']} = {ref['name']}（{lock}）")
+    return "\n".join(lines)
+
+
 def validate(cfg: dict) -> list[str]:
     """Return a list of problems. Empty list means valid."""
     problems: list[str] = []
@@ -55,15 +111,27 @@ def validate(cfg: dict) -> list[str]:
         if not sl.get(key):
             problems.append(f"style_lock.{key} is empty")
 
-    refs = cfg["reference_images"]
-    if not refs:
-        problems.append("reference_images is empty")
-    for i, ref in enumerate(refs, 1):
-        if ref.get("slot") != f"Image {i}":
-            problems.append(f"reference_images[{i}].slot should be 'Image {i}'")
-        for key in ("name", "provides", "note"):
-            if not ref.get(key):
-                problems.append(f"reference_images[{i}].{key} is empty")
+    # Zero reference images is a legal configuration (degraded mode), not an error.
+    for i, ref in enumerate(cfg.get("reference_images") or [], 1):
+        if not ref.get("name"):
+            problems.append(f"reference_images[{i}].name is empty")
+        if not ref.get("provides"):
+            problems.append(f"reference_images[{i}].provides is empty")
+        if not (ref.get("withholds") or ref.get("note")):
+            problems.append(
+                f"reference_images[{i}] has no boundary field: "
+                "add 'withholds' (what it must NOT control) or 'note'"
+            )
+        if not ref.get("conflict") and not ref.get("note"):
+            problems.append(
+                f"reference_images[{i}] has no conflict rule: "
+                "add 'conflict' e.g. '冲突以正文为准'"
+            )
+        if ref.get("slot") and ref["slot"] != f"Image {i}":
+            problems.append(
+                f"reference_images[{i}].slot is {ref['slot']!r} but position implies 'Image {i}'; "
+                "slot must follow attachment order"
+            )
 
     sp = cfg["spatial"]
     for key in ("anchors", "blocking", "continuity"):
@@ -71,7 +139,7 @@ def validate(cfg: dict) -> list[str]:
             problems.append(f"spatial.{key} is empty")
 
     clips = cfg["clips"]
-    expected = cfg.get("clip_count", 5)
+    expected = cfg.get("clip_count", len(clips))
     if len(clips) != expected:
         problems.append(f"clip count {len(clips)} != clip_count {expected}")
     total = 0.0
@@ -90,7 +158,7 @@ def validate(cfg: dict) -> list[str]:
         except (ValueError, KeyError, TypeError) as exc:
             problems.append(f"clips[{i}]: {exc}")
 
-    duration = cfg.get("duration", 30)
+    duration = cfg.get("duration", total)
     if abs(total - duration) > 0.01:
         problems.append(f"time codes sum to {total}s, expected {duration}s")
 
@@ -108,52 +176,71 @@ def validate(cfg: dict) -> list[str]:
 
 
 def warnings(cfg: dict) -> list[str]:
-    """Soft checks at whole-clip level. A single clip need not carry every marker."""
+    """Soft checks at whole-clip level. Thresholds come from check_profile."""
     out: list[str] = []
     clips = cfg.get("clips", [])
     n = len(clips)
+    if not n:
+        return out
+
+    profile_name = cfg.get("check_profile", "dialogue")
+    profile = CHECK_PROFILES.get(profile_name)
+    if profile is None:
+        out.append(
+            f"unknown check_profile {profile_name!r}; "
+            f"use one of {sorted(CHECK_PROFILES)}"
+        )
+        return out
 
     def count(token: str) -> int:
         return sum(1 for c in clips if token in c.get("body", ""))
 
-    # Thresholds follow the golden example: not every shot has dialogue,
-    # but depth cues and camera handling must recur throughout the clip.
-    for token, minimum, label in (
-        ("前景", 3, "foreground blur"),
-        ("背景", 3, "background blur"),
-        ("手持", 2, "camera handling"),
-        ("画外", 2, "off-screen dialogue"),
-    ):
+    for token, minimum in profile.items():
         got = count(token)
         if got < minimum:
-            out.append(f"only {got}/{n} clips carry '{token}' ({label}); target >= {minimum}")
+            out.append(f"only {got}/{n} clips carry '{token}'; target >= {minimum}")
 
     if not cfg.get("negative"):
         out.append("no negative constraints declared")
     return out
 
 
+def _sentences(value) -> str:
+    """Join a list of fragments into one sentence block, without a trailing period."""
+    if isinstance(value, list):
+        items = [str(x).strip().rstrip("。；") for x in value if str(x).strip()]
+        return "。".join(items)
+    return str(value).strip().rstrip("。；")
+
+
 def build(cfg: dict) -> str:
     sl = cfg["style_lock"]
     look = sl["look"]
     look_text = "，".join(look) if isinstance(look, list) else str(look)
+    look_text = look_text.strip().rstrip("。；")
     head = (
-        f"{sl['era_place']}，{look_text}。{sl['camera']}。"
-        f"{sl['lighting']}；{sl['set_dressing']}；{sl['crowd']}。"
-        f"{sl['grade']}，{sl['dialogue_rule']}。"
+        f"{_sentences(sl['era_place'])}，{look_text}。{_sentences(sl['camera'])}。"
+        f"{_sentences(sl['lighting'])}；{_sentences(sl['set_dressing'])}；{_sentences(sl['crowd'])}。"
+        f"{_sentences(sl['grade'])}，{_sentences(sl['dialogue_rule'])}。"
     )
 
     lines = [head, "[参考图锚定]"]
-    for ref in cfg["reference_images"]:
+    refs = norm_refs(cfg)
+    if refs:
+        for ref in refs:
+            lines.append(ref_line(ref))
+    else:
         lines.append(
-            f"{{{{{ref['slot']}}}}} ={ref['name']}：{ref['provides']}。{ref['note']}。"
+            "本片不使用参考图：主体外观与空间结构以段1与正文文字描述为准，冲突以正文为准。"
         )
 
     sp = cfg["spatial"]
-    anchors = "".join(sp["anchors"]) if isinstance(sp["anchors"], list) else sp["anchors"]
-    continuity = "".join(sp["continuity"]) if isinstance(sp["continuity"], list) else sp["continuity"]
+    anchors = _sentences(sp["anchors"])
+    continuity = _sentences(sp["continuity"])
+    blocking = _sentences(sp["blocking"])
+    subject = cfg.get("subject") or sp.get("subject") or "主体"
     lines.append("[空间与站位声明]")
-    lines.append(f"{anchors}。{cfg.get('subject', '主体')}动线：{sp['blocking']}。{continuity}")
+    lines.append(f"{anchors}。{subject}动线：{blocking}。{continuity}。")
 
     lines.append(f"CLIP正文（{len(cfg['clips'])}镜）")
     for clip in cfg["clips"]:
@@ -176,6 +263,7 @@ def main() -> int:
     ap.add_argument("config", type=Path, help="path to the JSON config")
     ap.add_argument("-o", "--output", type=Path, help="write prompt to this file")
     ap.add_argument("--check", action="store_true", help="validate only, print report")
+    ap.add_argument("--manifest", action="store_true", help="print reference reconciliation only")
     args = ap.parse_args()
 
     try:
@@ -184,14 +272,21 @@ def main() -> int:
         print(f"ERROR: cannot load config: {exc}", file=sys.stderr)
         return 2
 
+    if args.manifest:
+        print(manifest(cfg))
+        return 0
+
     problems = validate(cfg)
     soft = warnings(cfg)
+    refs = norm_refs(cfg)
     print(f"[check] {args.config.name}: {'PASS' if not problems else 'FAIL'} "
-          f"({len(cfg.get('clips', []))} clips, {cfg.get('duration', '?')}s)")
+          f"({len(cfg.get('clips', []))} clips, {cfg.get('duration', '?')}s, {len(refs)} refs)")
     for p in problems:
         print(f"  ERROR  {p}")
     for w in soft:
         print(f"  WARN   {w}")
+    print("--- MANIFEST ---")
+    print(manifest(cfg))
 
     if problems or args.check:
         return 1 if problems else 0
