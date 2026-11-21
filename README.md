@@ -33,7 +33,8 @@ WorkBuddy 用户级 Skill：生成 **30 秒 / 5 镜 AI 视频提示词规格书*
 - **每张图写三段**：是什么 / 提供什么 / 不提供什么，并附「冲突以正文为准」。只写「仅提供面部参考」不足以阻止参考图把平光、构图、背景带进每一镜。
 - **角色与场景不要合成一张图**，否则场景色温会烧到人物脸上，且无法分别声明边界。
 - **缺图要降级**：0 张 → 保留段 2 标题写明不使用，并在正文首次出现主体处补一次外观锚点；1 张 → 补缺那一侧的文字描述；3–4 张 → 逐行写并防互相污染；>4 张 → 拆片。
-- **必须附对账行**，把编号映射回挂载顺序，否则用户无从核对。
+- **必须附对账行**，把编号映射回挂载顺序，否则用户无从核对。脚本 `--manifest` 可直接打印这一行。
+- **不确定平台怎么认编号时，跑一次三分钟自验**（协议第九节）：把两张图故意挂反，用最低配置生成一次，看模型按文字还是按顺序认图。换平台必重测。
 
 ## 关键设计（从原型提炼，可迁移）
 
@@ -92,8 +93,25 @@ python scripts/build_prompt.py assets/example-config.json -o output.md  # 输出
 python scripts/build_prompt.py assets/example-config.json --manifest    # 只打印挂载顺序
 ```
 
-`--check` 校验镜数、时间码合计、必填段、参考图边界字段（`withholds` / `conflict`）与编号连续性；通过后才输出正文。
-`check_profile` 可选 `dialogue` / `no_dialogue` / `product` / `montage`，调整软性质检阈值，无对白片不会被误报。
+`--check` 校验镜数、时间码合计、必填段、参考图边界字段（`withholds` / `conflict` 为必填，备注不能顶替）与编号连续性；通过后才输出正文。
+`reference_images` 整个键可以省略（等价于空列表），即 0 张参考图的降级配置。
+`check_profile` 可选 `dialogue` / `no_dialogue` / `product` / `montage`，调整软性质检阈值；写错档位会被当成错误拦下。
+提示词正文是英文时，脚本会跳过中文关键词软校验并给出 INFO，不再误报一串 WARN。
+
+### 配置字段速查
+
+| 字段 | 必填 | 说明 |
+|---|---|---|
+| `style_lock` | ✅ | 段 1 的七个子槽：`era_place` `look` `camera` `lighting` `set_dressing` `crowd` `grade` `dialogue_rule` |
+| `reference_images` | ➖ | 参考图数组，可省略或为 `[]`。每项 `name` / `provides` / `withholds` / `conflict` 均必填（`note` 为可选补充，不能顶替） |
+| `spatial` | ✅ | `anchors`（数组，一条一物件）/ `blocking`（`→` 串联）/ `continuity`（数组）/ `subject`（主体名，用于「X 动线」） |
+| `clips` | ✅ | 每项 `tc`（`MM:SS-MM:SS`）/ `body`；数量任意，时间码须连续 |
+| `sound` | ✅ | `bed`（底层环境）+ `per_clip`（数组，行数须等于镜数） |
+| `subject` | ➖ | 主体名；与 `spatial.subject` 等价，二者都不写会得到「主体动线」并被 WARN |
+| `duration` / `clip_count` | ➖ | 缺省由 `clips` 推导；显式写出则参与校验 |
+| `negative` | ➖ | 负面约束数组，缺省会 WARN |
+| `check_profile` | ➖ | `dialogue`(默认) / `no_dialogue` / `product` / `montage`；拼错算错误 |
+| `title` / `aspect_ratio` / `params` | ➖ | 仅作记录，脚本不读取，供人工附在正文之外 |
 
 ## 辅助能力（非主线）
 
@@ -115,3 +133,4 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 | 2026-11-08 | v2：一度把影视飓风四维框架抬为并列体系（**已撤销**） |
 | 2026-11-09 | v3：回归唯一基准，明确源画布链接与原型地位；辅助能力降为非主线；修正署名 |
 | 2026-11-09 | v4：补齐参考图引用协议（编号=挂载顺序 / 三段式边界 / 降级矩阵 / 对账）；模板去题材绑定，镜数与图数变量化；脚本支持 0 图与多档 check_profile；新增单参考图样例；质检扩到 20 项 |
+| 2026-11-21 | v5：修 4 处校验自相矛盾——缺省 `reference_images` 被误判失败、`withholds`/`conflict` 可被备注顶替、`check_profile` 拼错误只告警、英文正文误报 4 条 WARN；英文正文改走 INFO 跳过；超 4 张图给出告警；时间码解析失败不再连带误报总时长；样例补 `spatial.subject` 避免出现「主体动线」；新增配置字段速查表；修 spec-guide 指向已改名表格的悬空引用与两处多余空格；协议新增第九节「三分钟自验」，明确编号规则是平台行为推断而非普适定律 |
