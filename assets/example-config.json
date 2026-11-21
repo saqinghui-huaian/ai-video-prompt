@@ -31,6 +31,7 @@
     }
   ],
   "spatial": {
+    "subject": "李默",
     "anchors": [
       "收银台在中后部·阿姨站收银台后",
       "出口=大面积玻璃推拉门·在收银台左侧——结完账往画面左侧走·走出门店",
@@ -83,7 +84,6 @@
     "aspect_ratio": "21:9",
     "resolution": "先 720p 草稿，通过后 1080p / 4K 终稿",
     "native_audio": true,
-    "reference_image_order": ["Image 1 = 角色参考", "Image 2 = 场景参考"],
     "seed": "固定并登记"
   }
 }
