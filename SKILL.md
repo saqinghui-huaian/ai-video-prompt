@@ -1,6 +1,6 @@
 ---
 name: ai-video-prompt
-description: 以 TapNow 画布 0e561120-5c2d-4bd8-821b-f5c532645ec5 的 [STYLE LOCK] 30 秒 5 镜规格书为唯一核心基准，生成可直接粘贴到 Seedance 2.5 / 可灵 / 即梦 / Veo 的 AI 视频提示词。当用户要求写视频提示词、做分镜脚本、固定 STYLE LOCK 模板、把一段场景扩写成 30 秒成片提示词时使用。默认输出五段结构：风格锁 / 参考图锚定 / 空间与站位声明 / CLIP 正文 / BGM 与声音设计。附带静态图片提示词作为辅助模式（影视飓风四维框架），仅在用户明确要求设定图、定妆照、单张图时使用。
+description: 以 TapNow 画布 0e561120-5c2d-4bd8-821b-f5c532645ec5 的 [STYLE LOCK] 30 秒 5 镜规格书为唯一核心基准，生成可直接粘贴到 Seedance 2.5 / 可灵 / 即梦 / Veo 的 AI 视频提示词。当用户要求写视频提示词、做分镜脚本、固定 STYLE LOCK 模板、把一段场景扩写成 30 秒成片提示词、处理参考图与 {{Image N}} 占位编号时使用。默认输出五段结构：风格锁 / 参考图锚定 / 空间与站位声明 / CLIP 正文 / BGM 与声音设计。附带静态图片提示词作为辅助模式（影视飓风四维框架），仅在用户明确要求设定图、定妆照、单张图时使用。
 agent_created: true
 ---
 
@@ -16,29 +16,36 @@ agent_created: true
 
 不得用其它画布或框架替换这套基准。影视飓风《图片提示词》四维框架只是**辅助查漏工具**，不是与它并列的第二套体系；其它题材画布的素材与本技能来源无关。
 
+**只借结构，不借题材**。原型的年代、地点、人名、年代物件、台词、具体色值全部属于那部片，换题必须替换；可迁移的只有五段结构、槽位划分、边界写法、动线闭合与声画对账这些方法。每次产出前自问一句：这段文字换到别的题材还成立吗？不成立就说明在照抄。
+
 ## 五段结构（固定顺序，默认输出格式）
 
 | 段 | 标题 | 作用 |
 |---|---|---|
 | 1 | `[STYLE LOCK]` 风格锁 | 摄影规格、光位、陈设、人气、胶片质感、对白语言规则 |
-| 2 | `[参考图锚定]` | 声明 `{{Image N}}` 提供什么、不提供什么；机位与状态以正文为准 |
+| 2 | `[参考图锚定]` | 按**挂载顺序**编号，声明 `{{Image N}}` 提供什么、不提供什么、冲突以谁为准 |
 | 3 | `[空间与站位声明]` | 方位锚点、完整动线、跨镜状态延续 |
-| 4 | `CLIP正文（5镜）` | 逐镜：机位 + 连续动作 + 前后景虚焦 + 群演 + 画外对白 |
+| 4 | `CLIP正文（N镜）` | 逐镜：机位 + 连续动作 + 前后景虚焦 + 群演 + 画外对白 |
 | 5 | `[BGM & 声音设计]` | 底层环境声 + 逐镜音效 / 对白 + 声场转换 |
 
-默认 **30 秒 / 5 镜 / 每镜约 6 秒**。用户指定其它时长时，调整镜数与时间码，五段结构不变。
+默认 **30 秒 / 5 镜 / 每镜约 6 秒**。用户指定其它时长时，按「总时长 ÷ 目标单镜时长」重算镜数，五段结构不变，参考图数也可随项目增减。
 
 ## 默认工作流
 
-1. 读取 `references/golden-example.md`，确认原型的结构与密度；读取 `references/spec-guide.md` 掌握槽位字典。
-2. 以 `assets/video-spec-template.md` 为输出骨架；风格词查 `references/style-lock-library.md`。
-3. 解析场景描述，按五段固定顺序组装；缺省项用合理默认值补齐，不反问超过一轮。
-4. 需要批量或可复现产出时，填写与 `assets/example-config.json` 同构的配置，运行 `scripts/build_prompt.py`。
-5. 按 `references/spec-guide.md` 第七节 15 项质检清单核验后输出。
+1. 读取 `references/golden-example.md`，确认原型的结构与密度，并看清「哪些是原型私有、不能照抄」那一节。
+2. 读 `references/spec-guide.md` 掌握槽位字典；写段 2 前先读 `references/reference-image-protocol.md`。
+3. 以 `assets/video-spec-template.md` 为输出骨架；风格词查 `references/style-lock-library.md`（含「从零组一组风格锁」的七槽填空法）。
+4. 解析场景描述，按五段固定顺序组装；缺省项用合理默认值补齐，不反问超过一轮。
+5. 需要批量或可复现产出时，填写与 `assets/example-config.json` 同构的配置，运行 `scripts/build_prompt.py`；单参考图 / 非 30 秒的样例见 `assets/example-config-single-ref.json`。
+6. 按 `references/spec-guide.md` 第七节 20 项质检清单核验后输出。
 
-## 硬约束（全部来自原型）
+## 硬约束（全部来自原型的方法，不是原型的文案）
 
 - 风格锁前置，用编号或标签写成**规格书**，不写成散文。
+- **参考图编号 = 挂载顺序**，从 `Image 1` 连续、不跳号、一图一号；顺序改了编号必须重写。
+- **每张参考图写三段**：是什么 / 提供什么 / 不提供什么，并附「冲突以正文为准」。
+- **缺图要降级**：0 张时保留段 2 标题写明不使用，并在正文首次出现主体处补一次外观锚点；1 张时补缺那一侧的文字描述。
+- 产出必须附「参考图挂载顺序」对账行，否则用户无法核对。
 - 参考图只锚外观与空间结构；机位、动作、状态一律以 CLIP 正文为准。
 - 空间声明先于分镜；动线贯穿全片，相邻镜不跳轴、不反向。
 - 每镜只写一条连续动作链；并发动作写「与…同时完成」。
@@ -47,7 +54,7 @@ agent_created: true
 - 不写抽象情绪词，改写为可拍摄的光位、材质、动作、物件。
 - 主体外观只在风格锁或参考图声明中出现一次，正文用名字或代词指代。
 - 末镜留收束动作（视线转移、低头、出画），并交代声场落点。
-- 产出后附模型参数建议（模型、时长、比例、分辨率、seed、参考图）。
+- 产出后附模型参数建议（模型、时长、比例、分辨率、seed、挂载顺序对账）。
 
 ## 辅助模式（非主线，仅显式触发）
 
@@ -63,12 +70,14 @@ agent_created: true
 
 | 文件 | 归属 | 用途 |
 |---|---|---|
-| `references/golden-example.md` | **核心基准** | 原型提示词原文 + 8 条质量基线 |
-| `references/spec-guide.md` | 核心 | 五段槽位字典、写法纪律、15 项质检 |
-| `assets/video-spec-template.md` | 核心 | 五段规格书可填骨架 |
-| `references/style-lock-library.md` | 核心 | 暖/冷色温、光位、年代物件、声音、一致性工程 |
-| `assets/example-config.json` | 核心 | 脚本输入样例（小卖部 5 镜） |
-| `scripts/build_prompt.py` | 核心 | JSON → 完整规格书，`--check` 结构校验 |
+| `references/golden-example.md` | **核心基准** | 原型提示词原文 + 8 条质量基线 + 原型私有项清单 |
+| `references/reference-image-protocol.md` | **核心** | `{{Image N}}` 编号规则、三段式边界、降级矩阵、对账、失败模式 |
+| `references/spec-guide.md` | 核心 | 五段槽位字典、写法纪律、20 项质检 |
+| `assets/video-spec-template.md` | 核心 | 五段规格书可填骨架（镜数与参考图数均可变） |
+| `references/style-lock-library.md` | 核心 | 七槽填空法、三种色温方向、光位、年代物件、声音、一致性工程 |
+| `assets/example-config.json` | 核心 | 脚本输入样例（双参考图 / 5 镜 30 秒） |
+| `assets/example-config-single-ref.json` | 核心 | 脚本输入样例（单参考图 / 4 镜 24 秒，演示降级与非原型题材） |
+| `scripts/build_prompt.py` | 核心 | JSON → 完整规格书，`--check` 校验，`--manifest` 输出对账 |
 | `assets/image-prompt-template.md` | 辅助 | 单张图提示词模板 |
 | `references/image-prompt-guide.md` | 辅助 | 单张图工作流与质检 |
 | `references/dimension-library.md` | 辅助 | 四维维度选项库（也可用于主体系可选查漏） |
@@ -77,13 +86,16 @@ agent_created: true
 ## 脚本用法
 
 ```
-python scripts/build_prompt.py <config.json> [-o output.md] [--check]
+python scripts/build_prompt.py <config.json> [-o output.md] [--check] [--manifest]
 ```
 
-`--check` 只校验结构（镜数、时间码合计、必填段、参考图编号）不输出正文。
+`--check` 只校验结构（镜数、时间码合计、必填段、参考图边界字段）并打印对账表，不输出正文。
+`--manifest` 只打印参考图挂载顺序，用于核对提示词编号与实际挂图顺序。
+`check_profile` 可选 `dialogue`（默认）/ `no_dialogue` / `product` / `montage`，决定软性质检的阈值——无对白或空镜类片子不会被误报。
 
 ## 输出要求
 
 - 默认给完整可复制的规格书正文，正文块内不用 Markdown 表格。
-- 正文之后另附「参数建议」与「质检结果」。
+- 正文之后另附三块：**参考图挂载顺序对账**、**参数建议**、**质检结果**。
 - 走辅助模式时明确标注，避免用户误以为是主体系产出。
+- 若用户给的参考图数量与原型不同（0 / 1 / 3+），不要硬套两行模板，按协议第四节降级改写，并在回复里说明降级后要补什么。
