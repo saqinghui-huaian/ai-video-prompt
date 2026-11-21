@@ -4,7 +4,7 @@ description: 以 TapNow 画布 0e561120-5c2d-4bd8-821b-f5c532645ec5 的 [STYLE L
 agent_created: true
 ---
 
-# AI 视频提示词生成（30 秒 5 镜规格书）
+# AI 视频提示词生成（五段规格书 · 默认 30 秒 5 镜）
 
 ## 唯一基准
 
@@ -64,7 +64,7 @@ agent_created: true
 - 维度选项 `references/dimension-library.md`（时间 / 主体 / 场景 / 风格），原图 `references/visual-dimension-map.jpg` 仅作溯源
 - 产出单张图中英双版，100–200 字；**不得用它替代五段规格书**
 
-若用户要「先做设定图再拍 30 秒」，先出辅助图，再把它作为主体系 `{{Image N}}` 的参考图输入，并在参考图锚定段声明边界。
+若用户要「先做设定图再拍 30 秒」，先出辅助图，再把它挂进生成节点并按挂载顺序编号，在参考图锚定段声明边界——顺序与编号必须一起定，见 `references/reference-image-protocol.md` 第六节。
 
 ## 资源索引
 
