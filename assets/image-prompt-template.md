@@ -1,7 +1,7 @@
 # 辅助模式 · 图片提示词模板（非主线）
 
-> 影视飓风四维框架（时间 / 主体 / 场景 / 风格）。用于**单张静态图**。
-> 维度分类用于查漏，书写顺序用于输出——两者不要混为一谈。
+> 静态图查漏八步（完整选项见 `references/dimension-library.md`）。用于**单张静态图**。
+> 八步用于查漏，书写顺序用于输出——两者不要混为一谈。
 
 ## 书写顺序（输出时按此拼接）
 
@@ -21,19 +21,19 @@
 {NEGATIVE}
 ```
 
-## 占位符与四维对照
+## 占位符与八步对照
 
-| 占位符 | 所属维度 | 填写要点 |
+| 占位符 | 所属步骤 | 填写要点 |
 |---|---|---|
-| `STYLE_AND_GRADE` | 风格 · 画面风格 / 色调 | 写实或动画的具体门类 + 具体色名，不写「高级感」 |
-| `TIME_ERA` / `SEASON` / `TIME_OF_DAY` | 时间 | 年代、季节、时刻三选一二即可，不必填满 |
-| `SCENE` / `WEATHER` | 场景 | 环境 / 建筑 / 天气；有年代感时写具体物件 |
-| `SUBJECT_BASE` … `POSE` | 主体 | 人物按「基础→脸部→身体→服装→表情→姿势」；生物 / 物品见 `references/dimension-library.md` |
-| `SHOT_SIZE` / `ANGLE` / `COMPOSITION` / `FOCAL` | 风格 · 镜头语言 | 景别、角度、构图、焦段四者必须自洽 |
-| `LIGHT_TYPE` / `LIGHT_POSITION` / `LIGHT_QUALITY` / `LIGHT_EFFECT` | 风格 · 光源 | **最常漏项**：类型、位置、光质、落地效果 |
-| `MOOD` | 风格 · 氛围 | 只写可拍摄的氛围词，避免抽象评价 |
-| `CAMERA_BODY` / `DEPTH_OF_FIELD` / `FILM_STOCK` / `RESOLUTION` | 风格 · 摄影机 | 机型或胶片型号 + 景深 + 画质参数 |
-| `NEGATIVE` | 共用 | 变形、多手指、面部崩坏、文字、水印、logo |
+| `STYLE_AND_GRADE` | 2 定调 | 写实向或动画向的具体门类 + 具体色名，不写「高级感」 |
+| `TIME_ERA` / `SEASON` / `TIME_OF_DAY` | 1 定点 | 年代、季节、时刻三选一二即可，不必填满 |
+| `SCENE` / `WEATHER` | 4 定景 | 环境 / 建筑形制 / 天气；有年代感时写具体物件 |
+| `SUBJECT_BASE` … `POSE` | 5 定主体 | 按「基础→脸部→身体→服装→表情→姿势」七层过；生物 / 物品见 `references/dimension-library.md` |
+| `SHOT_SIZE` / `ANGLE` / `COMPOSITION` / `FOCAL` | 6 定镜头 | 景别、角度、构图、焦段四者必须自洽 |
+| `LIGHT_TYPE` / `LIGHT_POSITION` / `LIGHT_QUALITY` / `LIGHT_EFFECT` | 3 定光 | **最常漏项**：性质、方位、光质、落地效果 |
+| `MOOD` | 2 定调 | 只写可拍摄的氛围词，避免抽象评价 |
+| `CAMERA_BODY` / `DEPTH_OF_FIELD` / `FILM_STOCK` / `RESOLUTION` | 6 定镜头 | 机型或胶片型号 + 景深 + 画质参数 |
+| `NEGATIVE` | 8 排除 | 变形、多手指、面部崩坏、文字、水印、logo |
 
 ## 输出格式
 

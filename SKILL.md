@@ -1,6 +1,6 @@
 ---
 name: ai-video-prompt
-description: 以 TapNow 画布 0e561120-5c2d-4bd8-821b-f5c532645ec5 的 [STYLE LOCK] 30 秒 5 镜规格书为唯一核心基准，生成可直接粘贴到 Seedance 2.5 / 可灵 / 即梦 / Veo 的 AI 视频提示词。当用户要求写视频提示词、做分镜脚本、固定 STYLE LOCK 模板、把一段场景扩写成 30 秒成片提示词、处理参考图与 {{Image N}} 占位编号时使用。默认输出五段结构：风格锁 / 参考图锚定 / 空间与站位声明 / CLIP 正文 / BGM 与声音设计。附带静态图片提示词作为辅助模式（影视飓风四维框架），仅在用户明确要求设定图、定妆照、单张图时使用。
+description: 以 TapNow 画布 0e561120-5c2d-4bd8-821b-f5c532645ec5 的 [STYLE LOCK] 30 秒 5 镜规格书为唯一核心基准，生成可直接粘贴到 Seedance 2.5 / 可灵 / 即梦 / Veo 的 AI 视频提示词。当用户要求写视频提示词、做分镜脚本、固定 STYLE LOCK 模板、把一段场景扩写成 30 秒成片提示词、处理参考图与 {{Image N}} 占位编号时使用。默认输出五段结构：风格锁 / 参考图锚定 / 空间与站位声明 / CLIP 正文 / BGM 与声音设计。附带静态图片提示词作为辅助模式（查漏八步），仅在用户明确要求设定图、定妆照、单张图时使用。
 agent_created: true
 ---
 
@@ -14,7 +14,7 @@ agent_created: true
 - 原型提示词：2006 年中国小城高中校园小卖部、李默买水的 30 秒 5 镜 `[STYLE LOCK]` 规格书
 - 原文存档：`references/golden-example.md`（**质量基线，任何产出不得低于它的信息密度**）
 
-不得用其它画布或框架替换这套基准。影视飓风《图片提示词》四维框架只是**辅助查漏工具**，不是与它并列的第二套体系；其它题材画布的素材与本技能来源无关。
+不得用其它画布或框架替换这套基准。静态图片提示词属于**辅助查漏工具**，不是与它并列的第二套体系；其它题材画布的素材与本技能来源无关。
 
 **只借结构，不借题材**。原型的年代、地点、人名、年代物件、台词、具体色值全部属于那部片，换题必须替换；可迁移的只有五段结构、槽位划分、边界写法、动线闭合与声画对账这些方法。每次产出前自问一句：这段文字换到别的题材还成立吗？不成立就说明在照抄。
 
@@ -58,10 +58,10 @@ agent_created: true
 
 ## 辅助模式（非主线，仅显式触发）
 
-只有用户明确说「图片提示词 / 设定图 / 定妆照 / 场景空镜 / 三视图 / 影视飓风 / 那张思维导图」时，才走静态图片提示词：
+只有用户明确说「图片提示词 / 设定图 / 定妆照 / 场景空镜 / 三视图 / 角色设定图 / 只出一张图」时，才走静态图片提示词：
 
 - 模板 `assets/image-prompt-template.md`，规范 `references/image-prompt-guide.md`
-- 维度选项 `references/dimension-library.md`（时间 / 主体 / 场景 / 风格），原图 `references/visual-dimension-map.jpg` 仅作溯源
+- 查漏八步与全部选项 `references/dimension-library.md`（八步是查漏顺序，不是书写顺序）
 - 产出单张图中英双版，100–200 字；**不得用它替代五段规格书**
 
 若用户要「先做设定图再拍 30 秒」，先出辅助图，再把它挂进生成节点并按挂载顺序编号，在参考图锚定段声明边界——顺序与编号必须一起定，见 `references/reference-image-protocol.md` 第六节。
@@ -83,8 +83,7 @@ agent_created: true
 | `scripts/build_prompt.py` | 核心 | JSON → 完整规格书，`--check` 校验，`--manifest` 输出对账 |
 | `assets/image-prompt-template.md` | 辅助 | 单张图提示词模板 |
 | `references/image-prompt-guide.md` | 辅助 | 单张图工作流与质检 |
-| `references/dimension-library.md` | 辅助 | 四维维度选项库（也可用于主体系可选查漏） |
-| `references/visual-dimension-map.jpg` | 辅助 | 影视飓风原图，仅溯源 |
+| `references/dimension-library.md` | 辅助 | 静态图查漏八步与全部选项（也可用于主体系可选查漏） |
 
 ## 脚本用法
 

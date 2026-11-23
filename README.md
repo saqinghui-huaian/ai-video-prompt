@@ -78,8 +78,7 @@ ai-video-prompt/
 │   ├── action-chain-library.md         # 补充：20 条三拍动作链 + 单拍扩三拍规则
 │   ├── abstract-emotion-rewrite.md     # 补充：25 组抽象情绪 → 可拍摄改写
 │   ├── image-prompt-guide.md           # 辅助：单张图工作流与质检
-│   ├── dimension-library.md            # 辅助：影视飓风四维选项库（可选查漏）
-│   └── visual-dimension-map.jpg        # 辅助：原版思维导图，仅溯源
+│   └── dimension-library.md            # 辅助：静态图查漏八步与全部选项
 └── scripts/
     └── build_prompt.py                 # JSON → 规格书；--check 校验，--manifest 出对账
 ```
@@ -130,14 +129,14 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 
 ## 辅助能力（非主线）
 
-仅当用户明确要求**静态图片提示词 / 设定图 / 定妆照 / 场景空镜**时，才使用 `assets/image-prompt-template.md` 与 `references/image-prompt-guide.md`（维度框架源自影视飓风《图片提示词》思维导图）。它是查漏工具与轻量模式，**不是与五段规格书并列的第二套体系**，也不得用它替代主输出。
+仅当用户明确要求**静态图片提示词 / 设定图 / 定妆照 / 场景空镜**时，才使用 `assets/image-prompt-template.md` 与 `references/image-prompt-guide.md`（查漏八步，骨架沿用主体系七槽）。它是查漏工具与轻量模式，**不是与五段规格书并列的第二套体系**，也不得用它替代主输出。
 
 设定图出完之后还有一步：挂进生成节点、按挂载顺序编号、在段 2 声明边界。见参考图协议第六节。
 
 ## 来源与署名
 
 - 全部核心内容整理自自建 TapNow 画布 [`Creative Concept (1016) (copy)`](https://app.tapnow.media/canvas/0e561120-5c2d-4bd8-821b-f5c532645ec5) 的视频节点提示词，原型由仓库所有者提供。
-- `references/visual-dimension-map.jpg` 为影视飓风《图片提示词》思维导图原图，版权归原作者所有，仅作辅助方法溯源；`references/dimension-library.md` 是其可读文本化版本。
+- `references/dimension-library.md` 与 `references/image-prompt-guide.md` 的静态图框架，由仓库所有者按自己的七槽体系重新组织与表述，不复制任何第三方原文、图解或分类层级。
 - `references/camera-motion-library.md`、`action-chain-library.md`、`abstract-emotion-rewrite.md` 由一份外部漫剧提示词知识体系文档清洗重写而来，只保留方法与词表，未收录原文与图片。
 - 本仓库未附开源许可证，仅供个人学习与创作使用。
 
@@ -146,8 +145,9 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 | 日期 | 内容 |
 |---|---|
 | 2026-11-08 | v1：从源画布提炼五段规格书，固化原型提示词 |
-| 2026-11-08 | v2：一度把影视飓风四维框架抬为并列体系（**已撤销**） |
+| 2026-11-08 | v2：一度把辅助框架抬为并列体系（**已撤销**） |
 | 2026-11-09 | v3：回归唯一基准，明确源画布链接与原型地位；辅助能力降为非主线；修正署名 |
 | 2026-11-09 | v4：补齐参考图引用协议（编号=挂载顺序 / 三段式边界 / 降级矩阵 / 对账）；模板去题材绑定，镜数与图数变量化；脚本支持 0 图与多档 check_profile；新增单参考图样例；质检扩到 20 项 |
 | 2026-11-21 | v5：修 4 处校验自相矛盾——缺省 `reference_images` 被误判失败、`withholds`/`conflict` 可被备注顶替、`check_profile` 拼错误只告警、英文正文误报 4 条 WARN；英文正文改走 INFO 跳过；超 4 张图给出告警；时间码解析失败不再连带误报总时长；样例补 `spatial.subject` 避免出现「主体动线」；新增配置字段速查表；修 spec-guide 指向已改名表格的悬空引用与两处多余空格；协议新增第九节「三分钟自验」，明确编号规则是平台行为推断而非普适定律 |
 | 2026-11-23 | v6：新增三份补充库（运镜 34 式 / 三拍动作链 20 条 / 抽象情绪改写 25 组）；`dimension-library.md` 运镜表 10 行扩到 20 行并统一速度单位写法；`spec-guide.md` 段 4 加「取词查漏」指引、质检第 17 条挂上改写工具；`SKILL.md` 工作流第 3 步与资源索引接入三库。三库均标注为「补充（查漏用）」，不改五段结构与槽位定义 |
+| 2026-11-23 | v7：辅助层除源重写。静态图框架不再沿用外部分类，改按主体系七槽组织为**八步查漏法**（定点 / 定调 / 定光 / 定景 / 定主体 / 定镜头 / 动效 / 排除），原选项库全部子项逐项保留（人物七层、生物五项、物品四项、建筑四项、光源四项、镜头七项、运镜 20 行）；删除第三方版权原图及其全部引用；`image-prompt-guide.md` 原维度表换为八步表，工作流与质检同步；`assets/image-prompt-template.md` 占位符对照改按八步归属；`SKILL.md` 触发词与资源索引、README 来源署名同步。主体系（五段结构、参考图协议、槽位字典、脚本）一字未动 |
