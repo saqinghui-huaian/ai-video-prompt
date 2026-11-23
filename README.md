@@ -53,9 +53,9 @@ WorkBuddy 用户级 Skill：生成 **30 秒 / 5 镜 AI 视频提示词规格书*
 
 | 文件 | 治什么 | 怎么用 |
 |---|---|---|
-| [`references/camera-motion-library.md`](references/camera-motion-library.md) | 段 4 第一成分「机位与运镜」写空、写错 | 34 式运镜：英文对照 / 叙事用途 / 一句式写法 / 反例；取词四条纪律（段 1 定体系、一镜一主运镜、速度写「倍速·整镜用时」、必带主体锚点）；节奏三档；战斗/对话/回忆/探索四类镜头序列；六种失败模式 |
-| [`references/action-chain-library.md`](references/action-chain-library.md) | 段 4 第二成分「连续动作」被写成静态姿势 | 20 条**三拍动作链**（起手→过程→反馈），分移动 / 取放 / 递接 / 情绪转折 / 身体状态 / 群像六组，每条自带声音标记；附「单拍扩三拍」五条规则 |
-| [`references/abstract-emotion-rewrite.md`](references/abstract-emotion-rewrite.md) | 质检第 17 条：正文出现「孤独 / 紧张 / 高级感」 | 五通道改写（光位 / 材质 / 动作 / 物件 / 声音）+ 25 组对照表；写完正文全文搜一遍抽象词，命中即改 |
+| [`references/camera-motion-library.md`](references/camera-motion-library.md) | 段 4 第一成分「机位与运镜」写空、写错 | 34 式运镜按**叙事功能**分 6 组（建立紧张 / 释放信息 / 代入主体 / 抽离旁观 / 强调仪式 / 收束落点），每式含英文、什么时候用、一句式写法、反例；取词四条纪律；节奏四档；四套组镜公式；六种失败模式 |
+| [`references/action-chain-library.md`](references/action-chain-library.md) | 段 4 第二成分「连续动作」被写成静态姿势 | 20 条**三拍动作链**（起手→过程→反馈）按**发力顺序**分 6 类（远端 / 近端 / 抓握释放 / 承重转移 / 群体同步 / 情绪转折），每条自带声音标记与景别下限；附「单拍扩三拍」五条规则 |
+| [`references/abstract-emotion-rewrite.md`](references/abstract-emotion-rewrite.md) | 质检第 17 条：正文出现「孤独 / 紧张 / 高级感」 | 五通道改写（光位 / 材质 / 动作 / 物件 / 声音）+ 25 个情绪词按**来源**分 4 组，每组给一个切入口（距离 / 呼吸 / 停顿 / 物件）；写完正文全文搜一遍抽象词，命中即改 |
 
 三份库的来源与清洗口径写在各自文件头部：原素材 235 条运镜 / 80 条单拍动作 / 80 条情绪词，共删除概念重复 5 对、修正「秒/帧」单位错误 10 处、剔除「8K 高清」类无效参数 16 处。
 
@@ -137,7 +137,7 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 
 - 全部核心内容整理自自建 TapNow 画布 [`Creative Concept (1016) (copy)`](https://app.tapnow.media/canvas/0e561120-5c2d-4bd8-821b-f5c532645ec5) 的视频节点提示词，原型由仓库所有者提供。
 - `references/dimension-library.md` 与 `references/image-prompt-guide.md` 的静态图框架，由仓库所有者按自己的七槽体系重新组织与表述，不复制任何第三方原文、图解或分类层级。
-- `references/camera-motion-library.md`、`action-chain-library.md`、`abstract-emotion-rewrite.md` 由一份外部漫剧提示词知识体系文档清洗重写而来，只保留方法与词表，未收录原文与图片。
+- `references/camera-motion-library.md`、`action-chain-library.md`、`abstract-emotion-rewrite.md` 的词表整理自公开的镜头语言与表演训练通识，由仓库所有者按本技能结构重新分组与表述，不复制任何第三方原文。
 - 本仓库未附开源许可证，仅供个人学习与创作使用。
 
 ## 版本
@@ -151,3 +151,4 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 | 2026-11-21 | v5：修 4 处校验自相矛盾——缺省 `reference_images` 被误判失败、`withholds`/`conflict` 可被备注顶替、`check_profile` 拼错误只告警、英文正文误报 4 条 WARN；英文正文改走 INFO 跳过；超 4 张图给出告警；时间码解析失败不再连带误报总时长；样例补 `spatial.subject` 避免出现「主体动线」；新增配置字段速查表；修 spec-guide 指向已改名表格的悬空引用与两处多余空格；协议新增第九节「三分钟自验」，明确编号规则是平台行为推断而非普适定律 |
 | 2026-11-23 | v6：新增三份补充库（运镜 34 式 / 三拍动作链 20 条 / 抽象情绪改写 25 组）；`dimension-library.md` 运镜表 10 行扩到 20 行并统一速度单位写法；`spec-guide.md` 段 4 加「取词查漏」指引、质检第 17 条挂上改写工具；`SKILL.md` 工作流第 3 步与资源索引接入三库。三库均标注为「补充（查漏用）」，不改五段结构与槽位定义 |
 | 2026-11-23 | v7：辅助层除源重写。静态图框架不再沿用外部分类，改按主体系七槽组织为**八步查漏法**（定点 / 定调 / 定光 / 定景 / 定主体 / 定镜头 / 动效 / 排除），原选项库全部子项逐项保留（人物七层、生物五项、物品四项、建筑四项、光源四项、镜头七项、运镜 20 行）；删除第三方版权原图及其全部引用；`image-prompt-guide.md` 原维度表换为八步表，工作流与质检同步；`assets/image-prompt-template.md` 占位符对照改按八步归属；`SKILL.md` 触发词与资源索引、README 来源署名同步。主体系（五段结构、参考图协议、槽位字典、脚本）一字未动 |
+| 2026-11-23 | v8：三份补充库按自有逻辑重新分组。运镜库由「按运动方式列 34 式」改为「按叙事功能分 6 组」（建立紧张 / 释放信息 / 代入主体 / 抽离旁观 / 强调仪式 / 收束落点），每组标明该组治什么、何时切走，组镜公式改为按组引用；动作链库由「按场景分六组」改为「按发力顺序分 6 类」（远端 / 近端 / 抓握释放 / 承重转移 / 群体同步 / 情绪转折），新增「起手部位决定景别下限」；情绪表由「按词列 25 组」改为「按来源分 4 组」（关系变化 / 处境受压 / 内在转折 / 欲望落空），每组给出一个通用切入口。34 式 / 20 条 / 25 词一条未减 |

@@ -75,9 +75,9 @@ agent_created: true
 | `references/spec-guide.md` | 核心 | 五段槽位字典、写法纪律、20 项质检 |
 | `assets/video-spec-template.md` | 核心 | 五段规格书可填骨架（镜数与参考图数均可变） |
 | `references/style-lock-library.md` | 核心 | 七槽填空法、三种色温方向、光位、年代物件、声音、一致性工程 |
-| `references/camera-motion-library.md` | 补充（查漏用） | 运镜 34 式：英文对照、叙事用途、一句式写法、反例；节奏三档；四类场景镜头序列；六种失败模式 |
-| `references/action-chain-library.md` | 补充（查漏用） | 20 条三拍动作链（起手→过程→反馈）+ 单拍扩三拍规则，服务段 4 第二成分 |
-| `references/abstract-emotion-rewrite.md` | 补充（查漏用） | 25 组抽象情绪 → 可拍摄改写，质检第 17 条的执行工具 |
+| `references/camera-motion-library.md` | 补充（查漏用） | 运镜 34 式，按**叙事功能**分 6 组（建立紧张 / 释放信息 / 代入主体 / 抽离旁观 / 强调仪式 / 收束落点），每式含英文、什么时候用、一句式写法、反例；节奏四档；四套组镜公式；六种失败模式 |
+| `references/action-chain-library.md` | 补充（查漏用） | 20 条三拍动作链，按**发力顺序**分 6 类（远端 / 近端 / 抓握释放 / 承重转移 / 群体同步 / 情绪转折），含声音标记与景别下限，服务段 4 第二成分 |
+| `references/abstract-emotion-rewrite.md` | 补充（查漏用） | 25 个情绪词按**来源**分 4 组（关系变化 / 处境受压 / 内在转折 / 欲望落空），每组给切入口（距离 / 呼吸 / 停顿 / 物件），质检第 17 条的执行工具 |
 | `assets/example-config.json` | 核心 | 脚本输入样例（双参考图 / 5 镜 30 秒） |
 | `assets/example-config-single-ref.json` | 核心 | 脚本输入样例（单参考图 / 4 镜 24 秒，演示降级与非原型题材） |
 | `scripts/build_prompt.py` | 核心 | JSON → 完整规格书，`--check` 校验，`--manifest` 输出对账 |
