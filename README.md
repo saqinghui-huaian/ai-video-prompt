@@ -47,6 +47,18 @@ WorkBuddy 用户级 Skill：生成 **30 秒 / 5 镜 AI 视频提示词规格书*
 - **声画逐镜对账**：段 5 每行都能在段 4 找到对应声源。
 - **收束靠动作**：末镜用视线转移 / 低头 / 出画收，不写情绪形容。
 
+## 三份补充库（v6 新增，均为查漏工具）
+
+主线仍是五段结构，这三份只补「词」和「改法」，不改槽位定义、不构成第二套体系：
+
+| 文件 | 治什么 | 怎么用 |
+|---|---|---|
+| [`references/camera-motion-library.md`](references/camera-motion-library.md) | 段 4 第一成分「机位与运镜」写空、写错 | 34 式运镜：英文对照 / 叙事用途 / 一句式写法 / 反例；取词四条纪律（段 1 定体系、一镜一主运镜、速度写「倍速·整镜用时」、必带主体锚点）；节奏三档；战斗/对话/回忆/探索四类镜头序列；六种失败模式 |
+| [`references/action-chain-library.md`](references/action-chain-library.md) | 段 4 第二成分「连续动作」被写成静态姿势 | 20 条**三拍动作链**（起手→过程→反馈），分移动 / 取放 / 递接 / 情绪转折 / 身体状态 / 群像六组，每条自带声音标记；附「单拍扩三拍」五条规则 |
+| [`references/abstract-emotion-rewrite.md`](references/abstract-emotion-rewrite.md) | 质检第 17 条：正文出现「孤独 / 紧张 / 高级感」 | 五通道改写（光位 / 材质 / 动作 / 物件 / 声音）+ 25 组对照表；写完正文全文搜一遍抽象词，命中即改 |
+
+三份库的来源与清洗口径写在各自文件头部：原素材 235 条运镜 / 80 条单拍动作 / 80 条情绪词，共删除概念重复 5 对、修正「秒/帧」单位错误 10 处、剔除「8K 高清」类无效参数 16 处。
+
 ## 目录结构
 
 ```
@@ -62,6 +74,9 @@ ai-video-prompt/
 │   ├── reference-image-protocol.md     # ★ 参考图编号、边界、降级矩阵、对账、失败模式
 │   ├── spec-guide.md                   # 五段槽位字典 + 20 项质检
 │   ├── style-lock-library.md           # 七槽填空法、三种色温方向、光位、年代物件、声音、一致性
+│   ├── camera-motion-library.md        # 补充：运镜 34 式 + 节奏三档 + 场景镜头序列 + 失败模式
+│   ├── action-chain-library.md         # 补充：20 条三拍动作链 + 单拍扩三拍规则
+│   ├── abstract-emotion-rewrite.md     # 补充：25 组抽象情绪 → 可拍摄改写
 │   ├── image-prompt-guide.md           # 辅助：单张图工作流与质检
 │   ├── dimension-library.md            # 辅助：影视飓风四维选项库（可选查漏）
 │   └── visual-dimension-map.jpg        # 辅助：原版思维导图，仅溯源
@@ -123,6 +138,7 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 
 - 全部核心内容整理自自建 TapNow 画布 [`Creative Concept (1016) (copy)`](https://app.tapnow.media/canvas/0e561120-5c2d-4bd8-821b-f5c532645ec5) 的视频节点提示词，原型由仓库所有者提供。
 - `references/visual-dimension-map.jpg` 为影视飓风《图片提示词》思维导图原图，版权归原作者所有，仅作辅助方法溯源；`references/dimension-library.md` 是其可读文本化版本。
+- `references/camera-motion-library.md`、`action-chain-library.md`、`abstract-emotion-rewrite.md` 由一份外部漫剧提示词知识体系文档清洗重写而来，只保留方法与词表，未收录原文与图片。
 - 本仓库未附开源许可证，仅供个人学习与创作使用。
 
 ## 版本
@@ -134,3 +150,4 @@ python scripts/build_prompt.py assets/example-config.json --manifest    # 只打
 | 2026-11-09 | v3：回归唯一基准，明确源画布链接与原型地位；辅助能力降为非主线；修正署名 |
 | 2026-11-09 | v4：补齐参考图引用协议（编号=挂载顺序 / 三段式边界 / 降级矩阵 / 对账）；模板去题材绑定，镜数与图数变量化；脚本支持 0 图与多档 check_profile；新增单参考图样例；质检扩到 20 项 |
 | 2026-11-21 | v5：修 4 处校验自相矛盾——缺省 `reference_images` 被误判失败、`withholds`/`conflict` 可被备注顶替、`check_profile` 拼错误只告警、英文正文误报 4 条 WARN；英文正文改走 INFO 跳过；超 4 张图给出告警；时间码解析失败不再连带误报总时长；样例补 `spatial.subject` 避免出现「主体动线」；新增配置字段速查表；修 spec-guide 指向已改名表格的悬空引用与两处多余空格；协议新增第九节「三分钟自验」，明确编号规则是平台行为推断而非普适定律 |
+| 2026-11-23 | v6：新增三份补充库（运镜 34 式 / 三拍动作链 20 条 / 抽象情绪改写 25 组）；`dimension-library.md` 运镜表 10 行扩到 20 行并统一速度单位写法；`spec-guide.md` 段 4 加「取词查漏」指引、质检第 17 条挂上改写工具；`SKILL.md` 工作流第 3 步与资源索引接入三库。三库均标注为「补充（查漏用）」，不改五段结构与槽位定义 |

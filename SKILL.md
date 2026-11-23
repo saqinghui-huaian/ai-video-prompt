@@ -34,7 +34,7 @@ agent_created: true
 
 1. 读取 `references/golden-example.md`，确认原型的结构与密度，并看清「哪些是原型私有、不能照抄」那一节。
 2. 读 `references/spec-guide.md` 掌握槽位字典；写段 2 前先读 `references/reference-image-protocol.md`。
-3. 以 `assets/video-spec-template.md` 为输出骨架；风格词查 `references/style-lock-library.md`（含「从零组一组风格锁」的七槽填空法）。
+3. 以 `assets/video-spec-template.md` 为输出骨架；风格词查 `references/style-lock-library.md`（含「从零组一组风格锁」的七槽填空法）；写段 4 前查 `references/camera-motion-library.md`（运镜 34 式与节奏档位）与 `references/action-chain-library.md`（三拍动作链），抽象情绪按 `references/abstract-emotion-rewrite.md` 改写。
 4. 解析场景描述，按五段固定顺序组装；缺省项用合理默认值补齐，不反问超过一轮。
 5. 需要批量或可复现产出时，填写与 `assets/example-config.json` 同构的配置，运行 `scripts/build_prompt.py`；单参考图 / 非 30 秒的样例见 `assets/example-config-single-ref.json`。
 6. 按 `references/spec-guide.md` 第七节 20 项质检清单核验后输出。
@@ -75,6 +75,9 @@ agent_created: true
 | `references/spec-guide.md` | 核心 | 五段槽位字典、写法纪律、20 项质检 |
 | `assets/video-spec-template.md` | 核心 | 五段规格书可填骨架（镜数与参考图数均可变） |
 | `references/style-lock-library.md` | 核心 | 七槽填空法、三种色温方向、光位、年代物件、声音、一致性工程 |
+| `references/camera-motion-library.md` | 补充（查漏用） | 运镜 34 式：英文对照、叙事用途、一句式写法、反例；节奏三档；四类场景镜头序列；六种失败模式 |
+| `references/action-chain-library.md` | 补充（查漏用） | 20 条三拍动作链（起手→过程→反馈）+ 单拍扩三拍规则，服务段 4 第二成分 |
+| `references/abstract-emotion-rewrite.md` | 补充（查漏用） | 25 组抽象情绪 → 可拍摄改写，质检第 17 条的执行工具 |
 | `assets/example-config.json` | 核心 | 脚本输入样例（双参考图 / 5 镜 30 秒） |
 | `assets/example-config-single-ref.json` | 核心 | 脚本输入样例（单参考图 / 4 镜 24 秒，演示降级与非原型题材） |
 | `scripts/build_prompt.py` | 核心 | JSON → 完整规格书，`--check` 校验，`--manifest` 输出对账 |

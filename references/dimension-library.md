@@ -113,19 +113,33 @@
 ### 镜头运动（运镜）
 | 运镜 | 英文 | 适用氛围 |
 |---|---|---|
-| 推 | push in | 聚焦情绪、紧张感 |
-| 拉 | pull out | 揭示全貌、孤独感 |
-| 摇 | pan / tilt | 跟随、展示空间 |
-| 移 | dolly / truck | 沉浸式移动 |
-| 跟 | tracking shot | 主体行进 |
-| 升降 | crane / jib | 史诗开场收尾 |
+| 推（慢 / 快 / 渐进） | push in | 聚焦情绪、发现、悬念升级 |
+| 拉（缓 / 快） | pull back | 揭示全貌、孤独感、反转 |
+| 摇（左右 / 上下 / 环形） | pan / tilt | 依次呈现、展示空间 |
+| 移（横 / 斜 / 弧） | dolly / truck | 沉浸式移动、视差纵深 |
+| 跟（背后 / 侧 / 低机位） | tracking shot | 主体行进、速度感、代入 |
+| 升降 | crane / jib | 史诗开场收尾、压迫 |
 | 环绕 | orbit / arc | 展示主体、高光时刻 |
+| 旋转 | roll / spin | 眩晕、失衡、梦境 |
+| 变焦（入 / 出） | zoom in / zoom out | 机位不动锁定细节、环境突变 |
 | 手持 | handheld | 纪实、不安 |
-| 固定 | static | 压抑、冷静观察 |
+| 固定 | static | 压抑、冷静观察、对话沉淀 |
 | 航拍 | aerial / drone | 大场景、上帝视角 |
+| 甩镜 | whip pan | 对峙、暴力切换 |
+| 俯冲 | dive | 降临、救援、压迫 |
+| 穿越（穿窗 / 穿墙） | through-the-space | 空间连接、一镜到底 |
+| 主观 POV | POV | 沉浸、代入 |
+| 越肩 / 反打 | over-the-shoulder / shot-reverse | 对话与对峙关系 |
+| 定格 / 延时 | freeze / timelapse | 强调瞬间、时间流逝 |
+| 水下 | underwater | 失重、窒息 |
+| 倒置 | inverted | 失衡、精神异常 |
+
+每条的具体写法、反例与节奏档位见 `references/camera-motion-library.md`（34 式，含「一镜一个主运镜」等四条取词纪律）。
 
 ### 速度与节奏
-慢动作（slow motion）/ 延时（timelapse）/ 正常速度；舒缓 / 急促
+慢动作（slow motion）/ 延时（timelapse）/ 正常速度；舒缓 / 急促。
+
+写法用「倍速 / 整镜用时」（`缓慢推进，整镜 5–6 秒匀速`），**不写「秒/帧」**——帧是画面单位，不是时间单位。
 
 ### 动作时序写法
 - "先……然后……"（先后链）
